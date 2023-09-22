@@ -30,6 +30,40 @@ app.get("/search", (req, res) => {
       message: "you have to provide a search",
     });
 });
+
+app.get("/movies/create", (req, res) => {
+  let id = req.params.id || "Fadi";
+  let statuss = res.status(200);
+  res.status(200).json({ status: 200, message: "hello ", id: id });
+});
+app.get("/movies/read", (req, res) => {
+  let arrMovie = [];
+  movies.forEach((Element) => {
+    arrMovie.push(Element.title);
+  });
+  res.status(200).json({ status: 200, data: arrMovie });
+});
+
+app.get("/movies/update", (req, res) => {
+  let id = req.params.id || "Fadi";
+  let statuss = res.status(200);
+  res.status(200).json({ status: 200, message: "hello ", id: id });
+});
+
+app.get("/movies/delete", (req, res) => {
+  let id = req.params.id || "Fadi";
+  let statuss = res.status(200);
+  res.status(200).json({ status: 200, message: "hello ", id: id });
+});
+
+const movies = [
+  { title: "Jaws", year: 1975, rating: 8 },
+  { title: "Avatar", year: 2009, rating: 7.8 },
+  { title: "Brazil", year: 1985, rating: 8 },
+  // { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
+  { title: "الإرهاب والكباب", year: 1992, rating: 6.2 },
+];
+
 app.listen(3000, () => {
   console.log("run server");
 }); // give the port that we gonna opent in and  make function to test if server open
