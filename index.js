@@ -31,23 +31,24 @@ app.get("/search", (req, res) => {
     });
 });
 
-app.get("/movies/create", (req, res) => {
+app.get("/movies/create/:id?", (req, res) => {  //id here is optional cz we have ? after the variable also we define a var in the pathe by (:)
   let id = req.params.id || "Fadi";
   let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", id: id });
 });
 app.get("/movies/read", (req, res) => {
-  let arrMovie = [];
-  movies.forEach((Element) => {
-    arrMovie.push(Element.title);
-  });
-  res.status(200).json({ status: 200, data: arrMovie });
+  // let arrMovie = [];
+  // movies.forEach((Element) => {
+  //   arrMovie.push(Element.title);
+  // });
+  res.status(200).json({ status: 200, data: movies });
 });
 
 app.get("/movies/update", (req, res) => {
-  let id = req.params.id || "Fadi";
+  // http://localhost:3000/movies/update/?r=123  // structure of url who has querry r: is the querry name
+  let rate = req.query.r || "Fadi";
   let statuss = res.status(200);
-  res.status(200).json({ status: 200, message: "hello ", id: id });
+  res.status(200).json({ status: 200, message: "hello ", rate: rate });
 });
 
 app.get("/movies/delete", (req, res) => {
