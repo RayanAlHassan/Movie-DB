@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   console.log("here");
 });
 
-//step 2
+//step 3
 app.get("/test", (req, res) => {
   res.status(200).json({ status: 200, message: "ok" }); // if we want to send message with status we use .status , but if we want just send status we use .sendStatus
 });
@@ -17,7 +17,7 @@ app.get("/time", (req, res) => {
   res.status(200).json({ status: 200, time: time });
 });
 
-//step 3
+//step 4
 app.get("/hello/:id?/", (req, res) => {
   let id = req.params.id || "Fadi";
   let statuss = res.status(200);
@@ -106,6 +106,44 @@ app.get("/movies/read/id/:ID?", (req, res) => {
       });
     } else res.status(200).json({ status: 200, data: movies[ID] });
   }
+});
+
+// step 8
+app.get("/movies/add", (req, res) => {
+  // /movies/add?title=Red notice&year=2000&rating=8
+  const Title = req.query.title;
+  const Year = req.query.year;
+  const Rating = req.query.rating || "4";
+  var newMovie = { title: Title, year: Year, rating: Rating };
+  // checking if the year is 4 digit or number . we convert the json to number to take it as a number ; and then we check if its number
+  if (!/^\d{4}$/.test(newMovie.year) || isNaN(parseInt(newMovie.year))) {
+    res.status(403).json({
+      status: 403,
+      error: true,
+      message:
+        "You cannot create a movie without providing a valid 4-digit year.",
+    });
+  }
+
+  if (!newMovie.title) {
+    return res.status(403).json({
+      status: 403,
+      error: true,
+      message: "You cannot create a movie without providing a title.",
+    });
+  }
+  if (newMovie.title && newMovie.year && newMovie.rating) {
+    let newList = movies.push(newMovie);
+    res.json(newMovie); // show the new movie added
+
+    req.newList = newList; // store the new value in a separated variable
+    next(); // we send the variable to the next route
+  }
+});
+app.get("movies/read", (req, res) => {
+  // /movies/read
+  const newList = req.newList; // get the sorted variuable from the previous route
+  res.json(newList);
 });
 
 app.listen(3000, () => {
