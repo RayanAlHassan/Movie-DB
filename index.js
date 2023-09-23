@@ -1,3 +1,4 @@
+//step 1
 const express = require("express"); // get express package
 const app = express(); // to make l app work with express
 const today = new Date();
@@ -6,6 +7,8 @@ app.get("/", (req, res) => {
   res.send("OKkk");
   console.log("here");
 });
+
+//step 2
 app.get("/test", (req, res) => {
   res.status(200).json({ status: 200, message: "ok" }); // if we want to send message with status we use .status , but if we want just send status we use .sendStatus
 });
@@ -14,11 +17,14 @@ app.get("/time", (req, res) => {
   res.status(200).json({ status: 200, time: time });
 });
 
+//step 3
 app.get("/hello/:id?/", (req, res) => {
   let id = req.params.id || "Fadi";
   let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", id: id });
 });
+
+// step 4
 app.get("/search", (req, res) => {
   const search = req.query.s;
   if (search) {
@@ -31,10 +37,10 @@ app.get("/search", (req, res) => {
     });
 });
 
+// step 5
 app.get("/movies/create/:id?", (req, res) => {
   //id here is optional cz we have ? after the variable also we define a var in the pathe by (:)
   let id = req.params.id || "Fadi";
-  let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", id: id });
 });
 app.get("/movies/read", (req, res) => {
@@ -48,13 +54,11 @@ app.get("/movies/read", (req, res) => {
 app.get("/movies/update", (req, res) => {
   // http://localhost:3000/movies/update/?r=123  // structure of url who has querry r: is the querry name
   let rate = req.query.r || "Fadi";
-  let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", rate: rate });
 });
 
 app.get("/movies/delete", (req, res) => {
   let id = req.params.id || "Fadi";
-  let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", id: id });
 });
 
@@ -66,6 +70,7 @@ const movies = [
   { title: "الإرهاب والكباب", year: 1992, rating: 6.2 },
 ];
 
+//step 6
 app.get("/movies/read/by-date", (req, res) => {
   const sortDataByDate = movies.slice().sort((a, b) => a.year - b.year);
   //.slice with empty arg will give me the array in new array with all element
@@ -86,6 +91,21 @@ app.get("/movies/read/by-title", (req, res) => {
   // .sort  takes two element from array and sort it depend on : if a-b = neg nb will put b befor a and vice versa (nb of char)
   console.log(sortDataByTitle);
   res.status(200).json({ status: 200, data: sortDataByTitle });
+});
+
+// step 7
+app.get("/movies/read/id/:ID?", (req, res) => {
+  for (let i = 0; i < movies.length; i++) {
+    const ID = req.params.ID || "2";
+    console.log(movies.length);
+    if (ID > movies.length) {
+      res.status(404).json({
+        status: 404,
+        error: true,
+        message: `the movie ${ID} does not exist`,
+      });
+    } else res.status(200).json({ status: 200, data: movies[ID] });
+  }
 });
 
 app.listen(3000, () => {
