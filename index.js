@@ -31,7 +31,8 @@ app.get("/search", (req, res) => {
     });
 });
 
-app.get("/movies/create/:id?", (req, res) => {  //id here is optional cz we have ? after the variable also we define a var in the pathe by (:)
+app.get("/movies/create/:id?", (req, res) => {
+  //id here is optional cz we have ? after the variable also we define a var in the pathe by (:)
   let id = req.params.id || "Fadi";
   let statuss = res.status(200);
   res.status(200).json({ status: 200, message: "hello ", id: id });
@@ -64,6 +65,28 @@ const movies = [
   // { title: "الإرهاب والكباب‎", year: 1992, rating: 6.2 },
   { title: "الإرهاب والكباب", year: 1992, rating: 6.2 },
 ];
+
+app.get("/movies/read/by-date", (req, res) => {
+  const sortDataByDate = movies.slice().sort((a, b) => a.year - b.year);
+  //.slice with empty arg will give me the array in new array with all element
+  // .sort with fuction of comparaision that takes two element from array and sort it depend on : if a-b = neg nb will put a befor b and vice versa
+  console.log(sortDataByDate);
+  res.status(200).json({ status: 200, data: sortDataByDate });
+});
+
+app.get("/movies/read/by-rating", (req, res) => {
+  const sortDataByRate = movies.slice().sort((a, b) => b.rating - a.rating);
+  // .sort  takes two element from array and sort it depend on : if a-b = neg nb will put b befor a and vice versa
+  console.log(sortDataByRate);
+  res.status(200).json({ status: 200, data: sortDataByRate });
+});
+
+app.get("/movies/read/by-title", (req, res) => {
+  const sortDataByTitle = movies.slice().sort((a, b) => a.title - b.title);
+  // .sort  takes two element from array and sort it depend on : if a-b = neg nb will put b befor a and vice versa (nb of char)
+  console.log(sortDataByTitle);
+  res.status(200).json({ status: 200, data: sortDataByTitle });
+});
 
 app.listen(3000, () => {
   console.log("run server");
