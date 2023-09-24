@@ -95,16 +95,19 @@ app.get("/movies/read/by-title", (req, res) => {
 
 // step 7
 app.get("/movies/read/id/:ID?", (req, res) => {
+  const ID = req.params.ID || "2";
   for (let i = 0; i < movies.length; i++) {
-    const ID = req.params.ID || "2";
-    console.log(movies.length);
+    // console.log(movies.length);
     if (ID > movies.length) {
       res.status(404).json({
         status: 404,
         error: true,
         message: `the movie ${ID} does not exist`,
       });
-    } else res.status(200).json({ status: 200, data: movies[ID] });
+    } else {
+      // console.log(typeof parseInt(ID));
+      res.status(200).json({ status: 200, data: movies[ID - 1] });
+    }
   }
 });
 
@@ -116,7 +119,8 @@ app.get("/movies/add", (req, res) => {
   const Rating = req.query.rating || "4";
   var newMovie = { title: Title, year: Year, rating: Rating };
   // checking if the year is 4 digit or number . we convert the json to number to take it as a number ; and then we check if its number
-  if (!/^\d{4}$/.test(newMovie.year) || isNaN(parseInt(newMovie.year))) {
+  if (newMovie.year.length !== 4 || isNaN(parseInt(newMovie.year))) {
+    // !/^\d{4}$/.test(newMovie.year)
     res.status(403).json({
       status: 403,
       error: true,
@@ -146,6 +150,23 @@ app.get("movies/read", (req, res) => {
   res.json(newList);
 });
 
+//step 9
+
+app.get("/movies/delete/:Id?", (req, res) => {
+  let Id = req.params.Id;
+  let deleted = movies.splice(Id - 1, 1); // idont use this variable because i cant access the atributes within , but we can use it just to show the object in jeneral
+  console.log(typeof parseInt(Id));
+  let newList = res.status(200).json({
+    status: 200,
+    data: `movie with id ${Id} was deleted successfully`,
+  });
+  req.newList = newList;
+  next();
+});
+app.get("/movies/read", (req, res) => {
+  const newList = req.newList; // get the sorted variuable from the previous route
+  res.json(newList);
+});
 app.listen(3000, () => {
   console.log("run server");
 }); // give the port that we gonna opent in and  make function to test if server open
