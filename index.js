@@ -1,6 +1,10 @@
 //step 1
 const express = require("express"); // get express package
 const app = express(); // to make l app work with express
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const today = new Date();
 
 app.get("/", (req, res) => {
@@ -120,7 +124,6 @@ app.get("/movies/add", (req, res) => {
   var newMovie = { title: Title, year: Year, rating: Rating };
   // checking if the year is 4 digit or number . we convert the json to number to take it as a number ; and then we check if its number
   if (newMovie.year.length !== 4 || isNaN(parseInt(newMovie.year))) {
-    // !/^\d{4}$/.test(newMovie.year)
     res.status(403).json({
       status: 403,
       error: true,
@@ -140,17 +143,18 @@ app.get("/movies/add", (req, res) => {
     let newList = movies.push(newMovie);
     res.json(newMovie); // show the new movie added
 
-    req.newList = newList; // store the new value in a separated variable
-    next(); // we send the variable to the next route
+    // req.newList = newList; // store the new value in a separated variable
+    // next(); // we send the variable to the next route
   }
 });
 app.get("movies/read", (req, res) => {
   // /movies/read
-  const newList = req.newList; // get the sorted variuable from the previous route
-  res.json(newList);
+  // const newList = req.newList; // get the sorted variuable from the previous route
+  res.json(movies);
 });
 
 //step 9
+// removed app.get on **read** cz we dont need it , we already have one
 
 app.get("/movies/delete/:Id?", (req, res) => {
   let Id = req.params.Id;
@@ -191,6 +195,83 @@ app.get("/movies/update/:ID", (req, res) => {
   }
 });
 
+//step 11
+
+// add
+app.post("/movies/add", (req, res) => {
+  // /movies/add?title=Red notice&year=2000&rating=8
+  // const Title = req.query.title;
+  // const Year = req.query.year;
+  // const Rating = req.query.rating || "4";
+  const { TITLE, RATING, YEAR } = req.body;
+
+  var newMovie = { title: TITLE, year: YEAR, rating: RATING };
+  // checking if the year is 4 digit or number . we convert the json to number to take it as a number ; and then we check if its number
+  if (YEAR.length > 4 || isNaN(YEAR)) {
+    res.status(403).json({
+      status: 403,
+      error: true,
+      message:
+        "You cannot create a movie without providing a valid 4-digit year.",
+    });
+  }
+
+  if (!newMovie.title) {
+    return res.status(403).json({
+      status: 403,
+      error: true,
+      message: "You cannot create a movie without providing a title.",
+    });
+  }
+  if (newMovie.title && newMovie.year && newMovie.rating) {
+    let newList = movies.push(newMovie);
+    res.json(newMovie); // show the new movie added
+  }
+});
+
+//delete
+app.delete("/movies/delete", (req, res) => {
+  let ID = req.body.ID;
+  if (ID > movies.length || ID < 1) {
+    res.status(404).json({
+      status: 404,
+      error: true,
+      message: `the movie ${ID} does not exist`,
+    });
+  }
+  movies.splice(ID - 1, 1);
+  res.status(200).json({
+    status: 200,
+    data: `movie with id ${ID} was deleted successfully`,
+  });
+});
+
+//update
+app.put("/movies/update", (req, res) => {
+  let ID = req.body.ID;
+  let TITLE = req.body.TITLE;
+  let RATING = req.body.RATING;
+  let YEAR = req.body.YEAR;
+
+  if (ID > movies.length || ID < 1) {
+    res.status(404).json({ status: 404, error: `this ${ID} not found` });
+  } else {
+    if (TITLE) {
+      movies[ID - 1].title = TITLE;
+    }
+    if (RATING) {
+      movies[ID - 1].rating = RATING;
+    }
+    if (YEAR) {
+      movies[ID - 1].year = YEAR;
+    }
+    res.status(200).json({ status: 200, data: movies });
+  }
+});
 app.listen(3000, () => {
   console.log("run server");
 }); // give the port that we gonna opent in and  make function to test if server open
+// const port = process.env.PORT || 3000;
+// app.listen(port, () => {
+//   console.log("server is runinf on port " + port);
+// });
