@@ -161,19 +161,36 @@ app.get("/movies/delete/:Id?", (req, res) => {
       message: `the movie ${Id} does not exist`,
     });
   }
-  let deleted = movies.splice(Id - 1, 1); // idont use this variable because i cant access the atributes within , but we can use it just to show the object in jeneral
-  console.log(typeof parseInt(Id));
-  let newList = res.status(200).json({
+  movies.splice(Id - 1, 1);
+  res.status(200).json({
     status: 200,
     data: `movie with id ${Id} was deleted successfully`,
   });
-  req.newList = newList;
-  next();
 });
-app.get("/movies/read", (req, res) => {
-  const newList = req.newList; // get the sorted variuable from the previous route
-  res.json(newList);
+
+//step 10
+app.get("/movies/update/:ID", (req, res) => {
+  let ID = req.params.ID;
+  let TITLE = req.query.title;
+  let RATING = req.query.rating;
+  let YEAR = req.query.year;
+
+  if (ID > movies.length || ID < 1) {
+    res.status(404).json({ status: 404, error: `this ${ID} not found` });
+  } else {
+    if (TITLE) {
+      movies[ID - 1].title = TITLE;
+    }
+    if (RATING) {
+      movies[ID - 1].rating = RATING;
+    }
+    if (YEAR) {
+      movies[ID - 1].year = YEAR;
+    }
+    res.status(200).json({ status: 200, data: movies });
+  }
 });
+
 app.listen(3000, () => {
   console.log("run server");
 }); // give the port that we gonna opent in and  make function to test if server open
