@@ -154,6 +154,13 @@ app.get("movies/read", (req, res) => {
 
 app.get("/movies/delete/:Id?", (req, res) => {
   let Id = req.params.Id;
+  if (Id > movies.length || Id < 1) {
+    res.status(404).json({
+      status: 404,
+      error: true,
+      message: `the movie ${Id} does not exist`,
+    });
+  }
   let deleted = movies.splice(Id - 1, 1); // idont use this variable because i cant access the atributes within , but we can use it just to show the object in jeneral
   console.log(typeof parseInt(Id));
   let newList = res.status(200).json({
