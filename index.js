@@ -1,16 +1,27 @@
 //step 1
 const express = require("express"); // get express package
 const app = express(); // to make l app work with express
+// we add this to make a restAPI
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+//library for mongoDB to save data
+const mongoose = require("mongoose");
 
-const today = new Date();
+const url =
+  "mongodb+srv://rayanalhassan:N1aPFqoj6WuVZMlT@cluster0.seoasny.mongodb.net/?retryWrites=true&w=majority";
 
-app.get("/", (req, res) => {
-  res.send("OKkk");
-  console.log("here");
-});
+// we have to make async function for get data and connecting to mongoose
+(async () => {
+  await mongoose
+    .connect(url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+
+    .then((result) => console.log("connected to db"))
+    .catch((err) => console.log(err));
+})();
 
 //step 3
 app.get("/test", (req, res) => {
@@ -275,3 +286,88 @@ app.listen(3000, () => {
 // app.listen(port, () => {
 //   console.log("server is runinf on port " + port);
 // });
+
+//oYvoDgxSnehDgPa4
+
+// step 12
+// add
+
+const movieSchema = new mongoose.Schema({
+  title: {
+    unique: true,
+    type: String,
+    require: [true, "title is required in this fild"],
+  },
+
+  year: {
+    type: Number,
+    require: [true, "year is required in this fild"],
+    validate: {
+      validator: function (year) {
+        // Ensure the year is a 4-digit integer
+        return Number.isInteger(year) && year.toString().length === 4;
+      },
+      message: "Year must be a 4-digit integer.",
+    },
+  },
+  rating: {
+    type: Number,
+    default: 4,
+  },
+});
+const Movie = mongoose.model("Movie", movieSchema); // it should be capital latter , this name will create a collection of Movies in db
+
+app.post("/movies/post", async (req, res) => {
+  const addMovie = new Movie(({ title, rating, year } = req.body));
+
+  await addMovie.save();
+
+  res.json({ addMovie });
+});
+
+app.get("/movies/get", async (req, res) => {
+  try {
+    const readMovie = await Movie.find({}); // to read the whole model
+    res.status(200).json(readMovie);
+    console.log("movie finding done!");
+  } catch (err) {
+    res.status(404).json("error occured", err);
+  }
+});
+app.put("/movies/updatee/:id", async (req, res) => {
+  let id = req.params.id;
+  let title = req.body.title;
+  let rating = req.body.rating;
+  let year = req.body.year;
+
+  // find id
+  // update data depend on this id
+  // so we use function ModelName.findOneAndUpdate
+  try {
+    const updated = await Movie.findByIdAndUpdate(id, { $set: req.body });
+
+    if (Movie.findByIdAndUpdate()) {
+      res.json({ status: 200, message: "updated successfully", data: updated });
+    } else {
+      res.json({ status: 404, error: true, message: "error" });
+    }
+  } catch (err) {
+    res.json({ status: 404, error: true, message: "catch error" });
+  }
+});
+
+app.delete("/movies/deletee/:id", async (req, res) => {
+  let id = req.params.id;
+
+  try {
+    const deleted = await Movie.findByIdAndDelete(id, { $set: req.body });
+
+    if (Movie.findByIdAndDelete()) {
+      res.json({ status: 200, message: "deleted successfully", data: deleted });
+    } else {
+      res.json({ status: 404, error: true, message: "error" });
+    }
+  } catch (err) {
+    res.json({ status: 404, error: true, message: "catch error" });
+  }
+});
